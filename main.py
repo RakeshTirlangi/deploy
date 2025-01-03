@@ -5,6 +5,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 from typing import List, Optional
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 load_dotenv()
 genai.configure(api_key=os.getenv("API_KEY"))
@@ -58,6 +60,10 @@ def get_response(language: str, query: str) -> tuple[str, List[str]]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Women's Support Assistant"}
+
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
     valid_languages = ["hindi", "english", "punjabi", "bengali", "marathi", "gujarati", "tamil", "telugu"]
@@ -84,7 +90,3 @@ def chat(request: ChatRequest):
 @app.get("/languages")
 def get_available_languages():
     return {"languages": ["hindi", "english", "punjabi", "bengali", "marathi", "gujarati", "tamil", "telugu"]}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
